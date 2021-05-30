@@ -23,3 +23,38 @@ def Remap(oldlow, oldhigh, newlow, newhigh, value):
     newRange = (newhigh - newlow)
     newVal = (((value - oldlow) * newRange) / oldRange) + newlow
     return newVal
+
+
+
+def draw_walls():
+    wall_color = (50,50,50)
+    wall_thickness = 4
+
+    pg.draw.rect(screen, (150,150,150), (g1.xCount * g1.cellSize, 0, sw - g1.xCount * g1.cellSize, g1.yCount*g1.cellSize))
+    pg.draw.rect(screen, (80,80,80), (0, g1.xCount * g1.cellSize, sw, sh-g1.yCount*g1.cellSize))
+
+    pg.draw.rect(screen, wall_color, (g1.xCount * g1.cellSize, 0, wall_thickness, g1.yCount*g1.cellSize))
+    pg.draw.rect(screen, wall_color, (0, g1.yCount*g1.cellSize-wall_thickness, sw, wall_thickness))
+
+    pg.draw.rect(screen, wall_color, (0, 0, sw, wall_thickness))
+    pg.draw.rect(screen, wall_color, (sw-wall_thickness, 0, wall_thickness, sh))
+    pg.draw.rect(screen, wall_color, (0, 0, wall_thickness, sh))
+    pg.draw.rect(screen, wall_color, (0, sh - wall_thickness, sw, wall_thickness))
+
+
+class Cell(object):
+
+    def __init__(self, size, color=[0, 0, 0]):
+        self.size = size
+        self.color = color
+        self.subsurface = pg.Surface((self.size,self.size))
+        self.subsurface.fill(self.color)
+        self.pos = (0, 0)
+
+    def change_color(self, color):
+        self.color = color
+        self.subsurface.fill(self.color)
+
+    def Draw(self, win, x, y):
+        self.pos = (x, y)
+        win.blit(self.subsurface, self.pos)
