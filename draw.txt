@@ -58,6 +58,8 @@ class Cell(object):
     def Draw(self, win, x, y):
         self.pos = (x, y)
         win.blit(self.subsurface, self.pos)
+
+
 if sizeToDraw == 1:
         mouseRelPosX = max(penSize - 1, min(g1.xCount - 1, int(Remap(0, (g1.cellSize * g1.xCount), 0, g1.xCount, pg.mouse.get_pos()[0]))))
         mouseRelPosY = max(penSize - 1, min(g1.yCount - 1, int(Remap(0, (g1.cellSize * g1.yCount), 0, g1.yCount, pg.mouse.get_pos()[1]))))
@@ -126,4 +128,115 @@ if sizeToDraw == 1:
         g1.change_color(mouseRelPosY - 2, mouseRelPosX, colorUsing)
         g1.change_color(mouseRelPosY - 2, mouseRelPosX - 1, colorUsing)
         g1.change_color(mouseRelPosY - 2, mouseRelPosX + 1, colorUsing)
+
+
+def neighbours(x,y):
+    return [[x+1,y],[x-1,y],[x,y+1],[x,y-1]]
+
+
+def fill(gridObject, posX, posY, colorNow, fillColor):
+
+    if posX < 0 or posY < 0:
+
+        return
+    if posX >= gridObject.xCount or posY >= gridObject.yCount:
+
+        return
+    if gridObject.grid[posX][posY].color != colorNow:
+        return
+    if [posX, posY] in visitedFillPositions:
+        return
+
+
+    visitedFillPositions.append([posX, posY])
+    gridObject.change_color(posY, posX, fillColor)
+    moves = neighbours(posX, posY)
+    for move in moves:
+        fill(gridObject, move[0], move[1], colorNow, fillColor)
+
+
+def tool_activate(toolIndex):
+    global colorUsing
+    if toolIndex == 0:
+        colorUsing = selectedColor.copy()
+    if toolIndex == 1:
+        colorUsing = g1.color.copy()
+    if toolIndex == 2:
+        colorUsing = selectedColor.copy()
+    if toolIndex == 3:
+        colorUsing = selectedColor.copy()
+
+def FileManager():
+    global fileName
+    window = Tk()
+    window.withdraw()
+    availableFormats = [("Portable Network Graphics", "*.png")]
+
+    filepath = asksaveasfilename(title="Save File", filetypes=availableFormats)
+    fileName = filepath.split("/")[-1]+".png"
+    return filepath[:]
+
+def Capture(display,path,pos,size):         # (pygame Surface, String, tuple, tuple)
+    image = pg.Surface(size)                # Create image surface
+    image.blit(display,(0,0),(pos,size))    # Blit portion of the display to the image
+    pg.image.save(image,path)               # Save the image to the disk
+    name = path.split("/")[-1]
+    pg.display.set_caption("PyDraw By Tahrim and Anzila - " + name)
+
+def key_event_up(event):
+    global penSize, undoed, holdingCTRL, colorScheme, selectedTool
+
+    if event.key == pg.K_1:
+        colorScheme = 1
+    elif event.key == pg.K_2:
+        colorScheme = 2
+
+    if event.key == pg.K_e:
+        selectedTool = 1
+        B_Buttons[1].clicked = True
+        for subbutton in B_Buttons:
+            if B_Buttons.index(subbutton) != selectedTool:
+                subbutton.clicked = False
+    elif event.key == pg.K_b:
+        selectedTool = 0
+        B_Buttons[0].clicked = True
+        for subbutton in B_Buttons:
+            if B_Buttons.index(subbutton) != selectedTool:
+                subbutton.clicked = False
+    elif event.key == pg.K_g:
+        selectedTool = 2
+        B_Buttons[2].clicked = True
+        for subbutton in B_Buttons:
+            if B_Buttons.index(subbutton) != selectedTool:
+                subbutton.clicked = False
+    elif event.key == pg.K_i:
+        selectedTool = 3
+        B_Buttons[3].clicked = True
+        for subbutton in B_Buttons:
+            if B_Buttons.index(subbutton) != selectedTool:
+                subbutton.clicked = False
+
+    if event.key == pg.K_LCTRL:
+        holdingCTRL = False
+
+    if event.key == pg.K_SPACE:
+        if holdingCTRL:
+            g1.clean()
+            undoed = True
+
+    if event.key == pg.K_s:
+        if holdingCTRL:
+            shortcutPath = FileManager(1)
+            SaveFile(g1, shortcutPath)
+
+    if event.key == pg.K_z:
+        if holdingCTRL:
+
+            for i in range(g1.yCount):
+                for j in range(g1.xCount):
+                    if round == 1:
+                        g1.change_color(j, i, g1.undoList[1][i][j])
+                    if round == -1:
+                        g1.change_color(j, i, g1.undoList[0][i][j])
+            undoed = True
 
