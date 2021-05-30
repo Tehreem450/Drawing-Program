@@ -1,0 +1,25 @@
+import pygame as pg
+from tkinter import *
+from tkinter import messagebox
+from tkinter.filedialog import askopenfilename, asksaveasfilename
+import sys
+
+sys.setrecursionlimit(10000)
+pg.init()
+
+sw, sh = 960, 850
+sc = (sw//2, sh//2)
+screen = pg.display.set_mode((sw, sh))
+pg.display.set_caption("PyDraw By Tahrim and Anzila")
+pg.display.set_icon(pg.image.load("icon.png"))
+
+fillImage = pg.transform.scale(pg.image.load("fill.png"), (40,40))
+brushImage = pg.transform.scale(pg.image.load("brush.png"), (25,25))
+eraserImage = pg.transform.scale(pg.image.load("eraser.png"), (25,25))
+dropperImage = pg.transform.scale(pg.image.load("eyedropper.png"), (30,30))
+
+def Remap(oldlow, oldhigh, newlow, newhigh, value):
+    oldRange = (oldhigh - oldlow)
+    newRange = (newhigh - newlow)
+    newVal = (((value - oldlow) * newRange) / oldRange) + newlow
+    return newVal
