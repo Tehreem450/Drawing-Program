@@ -196,11 +196,13 @@ g1 = Grid(64, 64, 12, 0, 0, [255, 255, 255])
 export_b = Button(200,790,80,40, (100, 100, 100), "Save", 1, 24, (255,255,255))
 SL_Buttons = [export_b]
 
-#sizes of tools
+#Sizes of brush and eraser
 
 S_brushSize = Button(880, 305, 10,20, (240,240,240), "Brush Size", 2)
 S_eraserSize = Button(880, 225, 10,20, (240,240,240), "Eraser Size", 2)
 S_buttons = [S_brushSize, S_eraserSize]
+
+#Sizes of tools
 
 B_penTool = Button(825, 60, 30, 30, (80,80,80), "", 1)
 B_eraserTool = Button(875, 60, 30, 30, (80,80,80), "", 1)
@@ -213,6 +215,8 @@ P_number1 = Button(900, 380, 15,15, (80,80,80), "")
 P_number1.clicked = True
 P_number2 = Button(920, 380, 15,15, (80,80,80), "")
 P_Buttons = [P_number1, P_number2]
+
+#Surface display
 
 fileFont = pg.font.SysFont(None, 30)
 nameSurface = pg.Surface((370,40))
@@ -234,6 +238,8 @@ holdingCTRL = False
 undoed = False
 mouseRelPosX = 0
 mouseRelPosY = 0
+
+#Positions of colours
 
 positions1 = []
 positions2 = []
@@ -275,6 +281,7 @@ def draw_palette(scheme):
     pg.draw.rect(screen, (235, 235, 235), (positions1[-1][0] - 82, positions1[-1][1] + 27, 35, 35))
     pg.draw.rect(screen, colorUsing, (positions1[-1][0] - 76, positions1[-1][1] + 33, 23, 23))
 
+#selecting the pen scrolling button and brush scrolling button
 
 def paint(var):
     global mouseRelPosX, mouseRelPosY
@@ -282,7 +289,6 @@ def paint(var):
         sizeToDraw = penSize
     elif var == 1:
         sizeToDraw = eraserSize
-
 
     if sizeToDraw == 1:
         mouseRelPosX = max(penSize - 1, min(g1.xCount - 1, int(Remap(0, (g1.cellSize * g1.xCount), 0, g1.xCount, pg.mouse.get_pos()[0]))))
@@ -353,10 +359,10 @@ def paint(var):
         g1.change_color(mouseRelPosY - 2, mouseRelPosX - 1, colorUsing)
         g1.change_color(mouseRelPosY - 2, mouseRelPosX + 1, colorUsing)
 
-
 def neighbours(x,y):
     return [[x+1,y],[x-1,y],[x,y+1],[x,y-1]]
 
+#filling the colour
 
 def fill(gridObject, posX, posY, colorNow, fillColor):
 
@@ -371,13 +377,13 @@ def fill(gridObject, posX, posY, colorNow, fillColor):
     if [posX, posY] in visitedFillPositions:
         return
 
-
     visitedFillPositions.append([posX, posY])
     gridObject.change_color(posY, posX, fillColor)
     moves = neighbours(posX, posY)
     for move in moves:
         fill(gridObject, move[0], move[1], colorNow, fillColor)
 
+#selecting the current using color
 
 def tool_activate(toolIndex):
     global colorUsing
@@ -389,6 +395,7 @@ def tool_activate(toolIndex):
         colorUsing = selectedColor.copy()
     if toolIndex == 3:
         colorUsing = selectedColor.copy()
+#saving your work
 
 def FileManager():
     global fileName
@@ -400,12 +407,16 @@ def FileManager():
     fileName = filepath.split("/")[-1]+".png"
     return filepath[:]
 
+#Caption display
+
 def Capture(display,path,pos,size):         # (pygame Surface, String, tuple, tuple)
     image = pg.Surface(size)                # Create image surface
     image.blit(display,(0,0),(pos,size))    # Blit portion of the display to the image
     pg.image.save(image,path)               # Save the image to the disk
     name = path.split("/")[-1]
     pg.display.set_caption("PyDraw By Tahrim and Anzila - " + name)
+
+#
 
 def key_event_up(event):
     global penSize, undoed, holdingCTRL, colorScheme, selectedTool
@@ -607,6 +618,8 @@ while True:
 
     for but in P_Buttons:
         but.Draw(screen)
+
+#calling the functions
 
     screen.blit(colorTitleFont.render("Size Settings", True, (50, 50, 50)), (779, 170))
     S_brushSize.Draw(screen, penSize)
