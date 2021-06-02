@@ -167,3 +167,24 @@ while True:
             if event.key in numkey:
                 clr = colors[numkey.index(event.key)]
                 dirtyrects.append(toolbar)
+
+
+            # Emptying canvas:
+            if event.key == pg.K_e:
+                canvas.fill(white)
+                latest5.fill(clear)
+                latest4.fill(clear)
+                latest3.fill(clear)
+                latest2.fill(clear)
+                latest1.fill(clear)
+                undone = 0
+                maxundone = 0
+                dirtyrects.append(screenrect)
+
+            # Undoing and redoing:
+            if event.key == pg.K_z and undone < maxundone:
+                undone += 1
+                dirtyrects.append(screenrect)
+            if event.key == pg.K_y and undone > 0:
+                undone -= 1
+                dirtyrects.append(screenrect)
