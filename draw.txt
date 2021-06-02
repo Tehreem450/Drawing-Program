@@ -139,3 +139,31 @@ while True:
         if event.type == pg.QUIT or pg.key.get_pressed()[pg.K_ESCAPE]:
             pg.quit()
             sys.exit()
+
+
+        if event.type == pg.MOUSEMOTION:
+            mousepos = pg.mouse.get_pos()
+            x = int(mousepos[0]*(realres[0]/screenres[0]))
+            y = int(mousepos[1]*(realres[1]/screenres[1]))
+            holdingclick = True
+            if screenrect.collidepoint(mousepos):
+                dirtyrects.append(screenrect)
+
+        if event.type == pg.MOUSEBUTTONDOWN:
+            holdingclick = False
+            if screenrect.collidepoint(mousepos):
+                dirtyrects.append(screenrect)
+
+            # Changing brush size:
+            if event.button == 4 and r < 100:
+                r += 1
+                dirtyrects.append(screenrect)
+            elif event.button == 5 and r > 2:
+                r -= 1
+                dirtyrects.append(screenrect)
+
+        if event.type == pg.KEYDOWN:
+
+            if event.key in numkey:
+                clr = colors[numkey.index(event.key)]
+                dirtyrects.append(toolbar)
